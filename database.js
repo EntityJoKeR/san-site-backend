@@ -15,7 +15,7 @@ const init = () => {
     db.serialize(()=>{
         db.run(`
             create table if not exists cases (
-                id integer,
+                id integer primary key autoincrement unique,
                 name text,
                 description text,
                 filename text,
@@ -26,8 +26,16 @@ const init = () => {
 }
 
 const addCase = (obj) => {
-    db.run(`insert into cases values(?,?,?,?,?)`, [obj.id, obj.name, obj.description, obj.filename, obj.date])
+    db.run(`insert into cases (name, description, filename, date) values (?, ?, ?, ?)`, [obj.name, obj.description, obj.filename, obj.date])
 }
+
+
+const getCases = () => {
+    db.all('select * from cases', (err, data) => {
+        return data
+    })
+}
+
 
 //Tests
 init()
@@ -39,3 +47,5 @@ addCase({
     filename: 'file.img',
     date: '01.01.0001'
 })
+
+getCases()
