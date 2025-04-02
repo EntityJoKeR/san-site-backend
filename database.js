@@ -1,17 +1,15 @@
-const sqlite3 = require('sqlite3')
+import sqlite3 from "sqlite3"
 
 const db = new sqlite3.Database('./data.db', (err) => {
     if (err) {
       console.error("Ошибка подключения к базе:", err.message);
     } else {
       console.log("Подключено к базе SQLite");
-    }})
+    }
+});
 
-const database = () => {
-    return db
-}
 
-const init = () => {
+export const init = () => {
     db.serialize(()=>{
         db.run(`
             create table if not exists cases (
@@ -25,27 +23,66 @@ const init = () => {
     })
 }
 
-const addCase = (obj) => {
+export const addCase = (obj) => {
     db.run(`insert into cases (name, description, filename, date) values (?, ?, ?, ?)`, [obj.name, obj.description, obj.filename, obj.date])
 }
 
 
-const getCases = () => {
-    db.all('select * from cases', (err, data) => {
-        return data
+export const getCases = () => {
+    return new Promise((resolve, reject) => {
+        db.all('select * from cases', (err, data) => {
+            console.log(data)
+            if (err){
+                reject(err)
+            }
+            resolve(data)
+        })
+        
+
+    })
+}
+
+export const getCase = (id) => {
+    return new Promise((resolve, reject) => {
+        db.all('select * from cases where id=?', [id], (err, data) => {
+            
+            if (err){
+                reject(err)
+            }
+            resolve(data)
+        })
+    })
+}
+
+export const deleteCase = (caseId) => {
+    db.run(`delete from cases where id=?`, [caseId], (err, data) => {
+        if (err) {
+            return err
+        }
+        else {
+            return null
+        }
     })
 }
 
 
+
+    
+
+
 //Tests
-init()
+// init()
 
-addCase({
-    id: 1,
-    name: 'case name',
-    description: 'case description',
-    filename: 'file.img',
-    date: '01.01.0001'
-})
+// addCase({
+//     id: 1,
+//     name: 'case name',
+//     description: 'case description',
+//     filename: 'file.img',
+//     date: '01.01.0001'
+// })
 
-getCases()
+// getCases()
+// deleteCase(1)
+
+
+// Данные для отправки
