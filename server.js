@@ -11,8 +11,8 @@ app.get(`/`, (req, res)=>{
     testFunc()
 })
 
-app.get('/cases', (req, res) => {
-    const data = getCases()
+app.get('/cases', async (req, res) => {
+    const data = await getCases()
     res.send(data)
 })
 
